@@ -7,6 +7,8 @@ import Modal from "../../components/UI/Modal/Modal";
 import Aux from "../../hoc/Auxiliary";
 import OrderSummary from "../../components/Burger/OrderSummary/OrderSummary";
 
+import axios from "../../axios-orders";
+
 const INGREDIENTS_PRICES = {
   meat: 1.3,
   bacon: 1.2,
@@ -62,7 +64,28 @@ class BurgerBuilder extends Component {
   };
 
   continuePurchasingHandler = () => {
-    alert("[GREAT] You continue!");
+    const order = {
+      ingredients: this.state.ingredients,
+      price: this.state.price,
+      customer: {
+        name: "Simo JS",
+        address: {
+          country: "Morocco",
+          street: "Test Street 1",
+          zipCode: "12345"
+        },
+        email: "test@test.com"
+      },
+      deliveryMethod: "Fastest"
+    };
+    axios
+      .post("orders.json", order)
+      .then(response => {
+        console.log("[Response]: ", response);
+      })
+      .catch(error => {
+        console.log("[ERROR]: ", error);
+      });
   };
 
   render() {
