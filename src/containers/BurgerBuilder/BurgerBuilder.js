@@ -8,6 +8,8 @@ import Aux from "../../hoc/Auxiliary";
 import OrderSummary from "../../components/Burger/OrderSummary/OrderSummary";
 import Spinner from "../../components/UI/Spinner/Spinner";
 
+import withErrorHandler from "../../hoc/withErrorHandler/withErrorHandler";
+
 import axios from "../../axios-orders";
 
 const INGREDIENTS_PRICES = {
@@ -132,4 +134,4 @@ class BurgerBuilder extends Component {
   }
 }
 
-export default BurgerBuilder;
+export default withErrorHandler(BurgerBuilder, axios);
