@@ -8,6 +8,8 @@ import classes from "./ContactData.module.css";
 
 import axios from "../../../axios-orders";
 
+import withErrorHandler from "../../../hoc/withErrorHandler/withErrorHandler";
+
 class ContactData extends Component {
   state = {
     orderForm: {
@@ -18,6 +20,11 @@ class ContactData extends Component {
           name: "name",
           placeholder: "Your Name"
         },
+        validation: {
+          required: true
+        },
+        valid: false,
+        touched: false,
         value: ""
       },
       email: {
@@ -27,6 +34,11 @@ class ContactData extends Component {
           name: "email",
           placeholder: "Your Email"
         },
+        validation: {
+          required: true
+        },
+        valid: false,
+        touched: false,
         value: ""
       },
       street: {
@@ -36,6 +48,11 @@ class ContactData extends Component {
           name: "street",
           placeholder: "Street"
         },
+        validation: {
+          required: true
+        },
+        valid: false,
+        touched: false,
         value: ""
       },
       zipCode: {
@@ -45,6 +62,13 @@ class ContactData extends Component {
           name: "zipCode",
           placeholder: "ZIP Code"
         },
+        validation: {
+          required: true,
+          minLength: 5,
+          maxLength: 5
+        },
+        valid: false,
+        touched: false,
         value: ""
       },
       country: {
@@ -54,6 +78,11 @@ class ContactData extends Component {
           name: "country",
           placeholder: "Country"
         },
+        validation: {
+          required: true
+        },
+        valid: false,
+        touched: false,
         value: ""
       },
 
@@ -65,10 +94,30 @@ class ContactData extends Component {
             { value: "cheapest", displayValue: "Cheapest" }
           ]
         },
-        value: ""
+        validation: {
+          required: true
+        },
+        valid: true,
+        touched: false,
+        value: "fastest"
       }
     },
+    formIsValid: false,
     loading: false
+  };
+
+  checkValidity = (value, rules) => {
+    let isValid = true;
+    if (rules.required) {
+      isValid = value !== "" && isValid;
+    }
+    if (rules.minLength) {
+      isValid = value.length >= rules.minLength && isValid;
+    }
+    if (rules.maxLength) {
+      isValid = value.length <= rules.maxLength && isValid;
+    }
+    return isValid;
   };
 
   orderHandler = event => {
@@ -86,14 +135,15 @@ class ContactData extends Component {
       orderData: formData
     };
     axios
-      .post("orders.json", order)
+      .post("/orders.json", order)
       .then(response => {
+        console.log("SUCCESS!!!!!!!!!!!!!!!!");
         this.setState({ loading: false });
         this.props.history.push("/");
       })
       .catch(error => {
+        console.log("FAILURE!!!!!!!!!!!!!!!!");
         this.setState({ loading: false });
-        console.log("[ERROR]: ", error);
       });
   };
 
@@ -105,8 +155,18 @@ class ContactData extends Component {
       ...orderFormUpdated[id]
     };
     formElementUpdated.value = event.target.value;
+    formElementUpdated.touched = true;
+    formElementUpdated.valid = this.checkValidity(
+      formElementUpdated.value,
+      formElementUpdated.validation
+    );
     orderFormUpdated[id] = formElementUpdated;
-    this.setState({ orderForm: orderFormUpdated });
+    let formIsValid = true;
+    for (let id in orderFormUpdated) {
+      formIsValid = orderFormUpdated[id].valid && formIsValid;
+    }
+    console.log(formIsValid);
+    this.setState({ orderForm: orderFormUpdated, formIsValid: formIsValid });
   };
 
   render() {
@@ -125,10 +185,14 @@ class ContactData extends Component {
             elementType={formElement.config.elementType}
             elementConfig={formElement.config.elementConfig}
             value={formElement.config.value}
+            invalid={!formElement.config.valid}
+            touched={formElement.config.touched}
             changed={event => this.inputChangedHandler(event, formElement.id)}
           />
         ))}
-        <Button type="Success">Order</Button>
+        <Button type="Success" disabled={!this.state.formIsValid}>
+          Order
+        </Button>
       </form>
     );
     if (this.state.loading) {
@@ -143,4 +207,4 @@ class ContactData extends Component {
   }
 }
 
-export default ContactData;
+export default withErrorHandler(ContactData, axios);

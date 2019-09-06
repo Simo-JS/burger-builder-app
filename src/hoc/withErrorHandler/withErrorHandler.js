@@ -14,6 +14,7 @@ const withErrorHandler = (WrappedComponent, axios) => {
         response => response,
         error => {
           this.setState({ error: error });
+          return Promise.reject(error);
         }
       );
       this.reqInt = axios.interceptors.request.use(request => {
