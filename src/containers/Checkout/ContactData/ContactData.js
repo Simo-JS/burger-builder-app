@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { connect } from "react-redux";
 
 import Button from "../../../components/UI/Button/Button";
 import Spinner from "../../../components/UI/Spinner/Spinner";
@@ -137,12 +138,10 @@ class ContactData extends Component {
     axios
       .post("/orders.json", order)
       .then(response => {
-        console.log("SUCCESS!!!!!!!!!!!!!!!!");
         this.setState({ loading: false });
         this.props.history.push("/");
       })
       .catch(error => {
-        console.log("FAILURE!!!!!!!!!!!!!!!!");
         this.setState({ loading: false });
       });
   };
@@ -207,4 +206,11 @@ class ContactData extends Component {
   }
 }
 
-export default withErrorHandler(ContactData, axios);
+const mapStateToProps = state => {
+  return {
+    ingredients: state.ingredients,
+    price: state.price
+  };
+};
+
+export default connect(mapStateToProps)(withErrorHandler(ContactData, axios));
