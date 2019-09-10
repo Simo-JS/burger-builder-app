@@ -6,4 +6,4 @@ export {
 
 export { orderBurger, orderInit, fetchOrders } from "./order";
 
-export { auth, authLogout } from "./auth";
+export { auth, authLogout, setAuthRedirectPath, checkAuthState } from "./auth";
